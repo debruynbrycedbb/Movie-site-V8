@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Top 25 — Bryce's CineVault</title>
+<meta name="description" content="My 25 highest rated films of all time.">
+<meta name="theme-color" content="#08090d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%235ee0ff'/><rect x='22' y='26' width='56' height='48' rx='6' fill='%2308090d'/><circle cx='36' cy='40' r='5' fill='%235ee0ff'/><circle cx='64' cy='40' r='5' fill='%235ee0ff'/><rect x='30' y='56' width='40' height='6' rx='3' fill='%235ee0ff'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="top25.css">
+</head>
+<body class="t25">
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#08090d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M2 9h20M7 4v5M17 4v5"/>
+        </svg>
+      </span>
+      <span class="brand-text">Bryce's Cine<em>Vault</em></span>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">Library</a>
+      <a href="top25.html" class="active">Top 25</a>
+      <a href="genres.html">Genres</a>
+      <a href="stats.html">Stats</a>
+    </nav>
+
+    <div class="header-stats">
+      <div class="hstat"><b data-stat="total">0</b><span>Films</span></div>
+      <div class="hstat keep"><b data-stat="rated">0</b><span>Rated</span></div>
+      <div class="hstat accent keep"><b data-stat="avg">--</b><span>Average</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <span class="hero-eyebrow">Personal Ranking</span>
+    <h1>TOP 25</h1>
+    <p class="hero-sub" id="heroSub">The highest rated films in the vault</p>
+    <div class="hero-rule"></div>
+
+    <div class="readout">
+      <div><b id="roRated">0</b><span>Rated</span></div>
+      <div><b id="roAvg">--</b><span>Avg score</span></div>
+      <div><b id="roTop">--</b><span>Highest</span></div>
+      <div><b id="roCut">--</b><span>Cut-off</span></div>
+    </div>
+
+    <div class="scope">
+      <label for="scopeSel">Scope</label>
+      <div class="field">
+        <select id="scopeSel"><option value="">All genres</option></select>
+      </div>
+    </div>
+  </section>
+
+  <div id="content"></div>
+
+</main>
+
+<script src="movies.js"></script>
+<script src="core.js"></script>
+<script src="top25.js"></script>
+</body>
+</html>

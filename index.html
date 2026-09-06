@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bryce's CineVault — Film Library</title>
+<meta name="description" content="Every film I've watched, rated and sorted.">
+<meta name="theme-color" content="#08090d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%235ee0ff'/><rect x='22' y='26' width='56' height='48' rx='6' fill='%2308090d'/><circle cx='36' cy='40' r='5' fill='%235ee0ff'/><circle cx='64' cy='40' r='5' fill='%235ee0ff'/><rect x='30' y='56' width='40' height='6' rx='3' fill='%235ee0ff'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#08090d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M2 9h20M7 4v5M17 4v5"/>
+        </svg>
+      </span>
+      <span class="brand-text">Bryce's Cine<em>Vault</em></span>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html" class="active">Library</a>
+      <a href="top25.html">Top 25</a>
+      <a href="genres.html">Genres</a>
+      <a href="stats.html">Stats</a>
+    </nav>
+
+    <div class="header-stats">
+      <div class="hstat"><b data-stat="total">0</b><span>Films</span></div>
+      <div class="hstat keep"><b data-stat="rated">0</b><span>Rated</span></div>
+      <div class="hstat accent keep"><b data-stat="avg">--</b><span>Average</span></div>
+      <button class="icon-btn" id="dataBtn" title="Backup &amp; settings" aria-label="Backup and settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="page-head">
+    <h1>Browse the collection</h1>
+    <p id="tagline">Every film I've watched. Click any poster to rate it out of 10.</p>
+    <div class="poster-status" id="posterStatus" hidden>
+      <span class="spinner"></span>
+      <span id="posterStatusText"></span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="search" id="searchWrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+      </svg>
+      <input type="search" id="q" placeholder="Search title or director…" autocomplete="off" spellcheck="false">
+      <button class="search-clear" id="qClear" aria-label="Clear search">&times;</button>
+    </div>
+
+    <!-- display:contents on desktop, a horizontal scroll strip on phones -->
+    <div class="filter-row">
+      <div class="field">
+        <select id="genre" aria-label="Filter by genre"><option value="">All genres</option></select>
+      </div>
+
+      <div class="field">
+        <select id="decade" aria-label="Filter by decade"><option value="">All decades</option></select>
+      </div>
+
+      <div class="segmented" id="statusSeg" role="group" aria-label="Filter by rating status">
+        <button data-status="all" class="on">All</button>
+        <button data-status="rated">Rated</button>
+        <button data-status="unrated">Unrated</button>
+      </div>
+
+      <div class="field">
+        <select id="sort" aria-label="Sort by">
+          <option value="rating">Sort: My rating</option>
+          <option value="title">Sort: Title</option>
+          <option value="year">Sort: Release year</option>
+          <option value="runtime">Sort: Runtime</option>
+          <option value="recent">Sort: Recently rated</option>
+          <option value="lastwatch">Sort: Last watched</option>
+          <option value="watchcount">Sort: Times watched</option>
+          <option value="added">Sort: My list order</option>
+        </select>
+      </div>
+
+      <button class="dir-btn" id="dirBtn" title="Toggle sort direction">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M6 13l6 6 6-6"/>
+        </svg>
+        <span id="dirLabel">Desc</span>
+      </button>
+
+      <button class="reset-btn" id="resetBtn" hidden>Reset</button>
+    </div>
+
+    <div class="result-count" id="count"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- ============ Movie detail / rating modal ============ -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="modal-close" id="mClose" aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <div>
+        <div class="modal-poster" id="mPoster"></div>
+      </div>
+      <div>
+        <h2 id="mTitle"></h2>
+        <div class="modal-sub" id="mSub"></div>
+        <div class="tags" id="mTags"></div>
+
+        <div class="rate-box">
+          <div class="rate-top">
+            <span class="rate-label">My rating</span>
+            <span class="rate-value none" id="mValue">--<small>/10</small></span>
+          </div>
+
+          <div class="slider-row">
+            <input type="range" class="slider" id="mSlider" min="0" max="10" step="0.1" value="0">
+            <input type="number" class="num-input" id="mNum" min="0" max="10" step="0.1" placeholder="--">
+          </div>
+
+          <div class="quick" id="mQuick"></div>
+
+          <div class="rate-actions">
+            <button class="btn btn-primary" id="mSave">Save rating</button>
+            <button class="btn btn-ghost" id="mClear">Clear</button>
+            <span class="saved-note" id="mSaved">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Saved
+            </span>
+          </div>
+
+          <details class="poster-fix">
+            <summary>Poster wrong or missing? Fix it</summary>
+
+            <p class="fix-hint">Save your own image in the <code>images</code> folder as:</p>
+            <div class="filename-row">
+              <code id="mFilename"></code>
+              <button class="btn btn-ghost" id="mCopyName" title="Copy filename">Copy</button>
+            </div>
+            <p class="fix-hint">.jpg, .jpeg, .png and .webp all work. Yours always wins.</p>
+
+            <p class="fix-hint" style="margin-top:12px">Or point at an image on the web:</p>
+            <div class="poster-fix-row">
+              <input type="url" id="mPosterUrl" placeholder="https://… direct image URL">
+              <button class="btn btn-ghost" id="mPosterSave" style="height:34px;padding:0 14px">Use</button>
+            </div>
+          </details>
+        </div>
+
+        <div class="watch-box">
+          <div class="watch-head">
+            <span class="rate-label">Watch history</span>
+            <span class="watch-summary" id="mWatchSummary"></span>
+          </div>
+
+          <div class="watch-add">
+            <input type="date" id="mWatchDate" aria-label="Date watched">
+            <button class="btn btn-ghost" id="mWatchAdd">Add</button>
+            <button class="btn btn-ghost watch-today" id="mWatchToday">Watched today</button>
+          </div>
+
+          <ul class="watch-list" id="mWatchList"></ul>
+        </div>
+
+        <div class="modal-nav">
+          <button id="mPrev">&larr; Previous</button>
+          <button id="mNext">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Backup / settings panel ============ -->
+<div class="overlay" id="dataOverlay">
+  <div class="modal" style="max-width:540px" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <button class="modal-close" id="dClose" aria-label="Close">&times;</button>
+    <div class="panel-body">
+      <h2 id="dTitle">Your ratings</h2>
+      <p>Ratings are stored in this browser. Export a backup to keep them safe or move them to another device.</p>
+
+      <div class="data-row">
+        <div>
+          <h4>Export backup</h4>
+          <p>Downloads a small <code>.json</code> file with every rating and watch date.</p>
+        </div>
+        <button class="btn btn-primary" id="expBtn">Export</button>
+      </div>
+
+      <div class="data-row">
+        <div>
+          <h4>Import backup</h4>
+          <p>Merges a backup into this browser. Newer ratings win; watch dates combine.</p>
+        </div>
+        <button class="btn btn-ghost" id="impBtn">Import</button>
+        <input type="file" id="impFile" accept="application/json,.json" hidden>
+      </div>
+
+      <div class="data-row">
+        <div>
+          <h4>Erase all ratings</h4>
+          <p>Wipes every rating and watch date in this browser. This cannot be undone.</p>
+        </div>
+        <button class="btn btn-ghost" id="wipeBtn" style="color:#f06d6d;border-color:rgba(240,109,109,.35)">Erase</button>
+      </div>
+
+      <h3 class="panel-sub">Poster lookup</h3>
+
+      <div class="data-row">
+        <div style="flex:1;min-width:0">
+          <h4>TMDB API key</h4>
+          <p>
+            Optional, but it's the difference between patchy posters and nearly all of them.
+            Free from <a href="https://www.themoviedb.org/settings/api" target="_blank"
+            rel="noopener">themoviedb.org</a> — make an account, then Settings → API, and copy
+            the <b>API Key (v3 auth)</b> value. Saved in this browser only.
+          </p>
+          <div class="poster-fix-row" style="margin-top:10px">
+            <input type="text" id="tmdbKey" placeholder="paste your v3 API key" spellcheck="false" autocomplete="off">
+            <button class="btn btn-ghost" id="tmdbSave" style="height:34px;padding:0 14px">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div>
+          <h4>Test poster sources</h4>
+          <p>Checks each source with one lookup and reports exactly what came back.</p>
+        </div>
+        <button class="btn btn-ghost" id="testBtn">Run test</button>
+      </div>
+
+      <div id="testOut" class="test-out" hidden></div>
+
+      <div class="data-row">
+        <div>
+          <h4>Refresh posters</h4>
+          <p>Clears the cached poster images and looks them up again.</p>
+        </div>
+        <button class="btn btn-ghost" id="refBtn">Refresh</button>
+      </div>
+
+      <div class="callout">
+        <b>Heads up:</b> because this is a free static site with no server, ratings live in
+        <b>this browser only</b>. They survive closing the tab and restarting your computer, but they
+        won't follow you to your phone and they're lost if you clear site data. Export a backup now
+        and then whenever you've rated a batch of films.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="movies.js"></script>
+<script src="core.js"></script>
+<script src="library.js"></script>
+</body>
+</html>
